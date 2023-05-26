@@ -1,23 +1,28 @@
-import logo from './logo.svg';
 import './App.css';
+import Post from "./Post"
+import UserSettings from "./UserSettings"
+import { Grid } from "@mui/material"
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Grid container md={12} sx={{
+        backgroundColor: "#f0a356",
+        height: "100vh",
+        display: "flex",
+        alignItems: "center",
+
+      }}>
+        <Grid container spacing={10} justifyContent={"center"}>
+          <Grid item md={5} xs={12}>
+            <Post/>
+          </Grid>
+          <Grid item md={5} xs={12}>
+            <UserSettings/>
+          </Grid>
+        </Grid>
+      </Grid>
+
     </div>
   );
 }
