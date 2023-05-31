@@ -10,12 +10,13 @@ import {
   Chip,
   Grid,
 } from "@mui/material";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useQuery } from "react-query";
 import { LoginSocialFacebook } from "reactjs-social-login";
 import { FacebookLoginButton } from "react-social-login-buttons";
 import { getProfile, updateProfile } from "./helpers";
 import { useLoginStore } from "./store";
+import axios from "axios";
 
 const UserSettings = () => {
   const REDIRECT_URI = "http://localhost:3000";
@@ -24,31 +25,33 @@ const UserSettings = () => {
   const setLogin = useLoginStore((state) => state.setLogin);
   const setLogout = useLoginStore((state) => state.setLogin);
 
-  const profileQuery = useQuery("profile", () => {
-    getProfile(1);
+  const profileQuery = useQuery({
+    queryKey: ["profile"],
+    queryFn: () => getProfile(1),
   });
 
-  const [profile, setProfile] = useState(
-    profileQuery.isSuccess ? profileQuery.data : null
-  );
-
   const onLogout = useCallback(() => {
-    setProfile(null);
     setProvider("");
     setLogout();
   }, []);
+
+  console.log(profileQuery.data);
+
+  if (profileQuery.isSuccess) {
+    setLogin();
+  }
 
   return (
     <Card sx={{ height: "700px" }}>
       <Grid justifyContent={"center"}>
         <h1>Account</h1>
-        {profile ? (
+        {profileQuery.isSuccess ? (
           <div>
             <h2>Status</h2>
-            <Chip label={"Logged in as " + profile.name} />
+            <Chip label={"Logged in as " + profileQuery.data.first_name} />
             <Button>Log out</Button>
             <Divider />
-            <h1>Schedule settings</h1>
+            <h1>Set Posting Schedule</h1>
             <BasicSelect />
           </div>
         ) : (
@@ -66,7 +69,6 @@ const UserSettings = () => {
                 picture: data.picture,
                 accessToken: data.accessToken,
               };
-              setProfile(newProfile);
               updateProfile(newProfile);
               setLogin();
             }}

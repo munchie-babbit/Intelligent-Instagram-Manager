@@ -8,11 +8,10 @@ class PostSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class ProfileSerializer(serializers.ModelSerializer):
-    posts = PostSerializer(many=True)
 
     class Meta:
         model = Profile
-        fields = "__all__"
+        exclude = ('posts',)
 
 
 

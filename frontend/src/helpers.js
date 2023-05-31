@@ -32,20 +32,16 @@ export const getPosts = (accessToken) => {
   //     });
 };
 
-export const getProfile = (id) => {
+export const getProfile = (id) =>
   axios
-    .get("http://localhost:8000/profile", {
+    .get("http://localhost:8000/api/profile/", {
       params: {
         id: id,
       },
     })
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.error(error);
+    .then((res) => {
+      return res.data[0];
     });
-};
 
 export const updateProfile = (profile) => {
   //   axios

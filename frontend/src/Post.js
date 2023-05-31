@@ -1,8 +1,7 @@
 import { Card, Button, Box, Grid } from "@mui/material";
-import placeholderIMG from "./images/Placeholder.png";
+
 import React, { useState } from "react";
 import ImageUploading from "react-images-uploading";
-import { getPosts } from "./helpers";
 import { useLoginStore } from "./store";
 
 const Post = () => {
@@ -10,7 +9,7 @@ const Post = () => {
   const caption = "some caption";
   const hashtags = "#hashtag";
   const postDate = "May 23, 2023";
-  const username = "Chrysanthemum's Adventures";
+
   const [isUploaded, setIsUploaded] = useState(false);
   const [isGenerated, setIsGenerated] = useState(false);
   const isLoggedIn = useLoginStore((state) => state.isLoggedIn);
@@ -32,7 +31,7 @@ const Post = () => {
     <Card sx={{ height: "700px", margin: "auto", overflow: "scroll" }}>
       {isLoggedIn ? (
         <Grid>
-          <h1>Posting to: {username}</h1>
+          <h1>Generate Post</h1>
           <ImageUploading
             multiple={true}
             value={images}
