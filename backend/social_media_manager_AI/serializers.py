@@ -4,12 +4,15 @@ from rest_framework import serializers
 
 class PostSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ("caption", "hashtags", "date", "is_logged_in")
+        model = Post
+        fields = "__all__"
 
 class ProfileSerializer(serializers.ModelSerializer):
     posts = PostSerializer(many=True)
 
     class Meta:
-        fields=("first_name", "last_name", "email", "picture", "posts")
+        model = Profile
+        fields = "__all__"
+
 
 

@@ -6,99 +6,37 @@ import {
   MenuItem,
   FormControl,
   Select,
-  SelectChangeEvent,
   Box,
-  TextField,
   Chip,
   Grid,
 } from "@mui/material";
 import { useState, useCallback } from "react";
-import { LoginSocialFacebook, IResolveParams } from "reactjs-social-login";
-
+import { useQuery } from "react-query";
+import { LoginSocialFacebook } from "reactjs-social-login";
 import { FacebookLoginButton } from "react-social-login-buttons";
-
-import axios from "axios";
+import { getProfile, updateProfile } from "./helpers";
+import { useLoginStore } from "./store";
 
 const UserSettings = () => {
-  const [isLoginError, setIsLoginError] = useState(false);
-  const [picture, setPicture] = useState("");
-  const [facebookData, setFacebookData] = useState("");
-  const REDIRECT_URI = "http://localhost:3000/account/login";
+  const REDIRECT_URI = "http://localhost:3000";
   const [provider, setProvider] = useState("");
-  const [profile, setProfile] = useState(null);
+
+  const setLogin = useLoginStore((state) => state.setLogin);
+  const setLogout = useLoginStore((state) => state.setLogin);
+
+  const profileQuery = useQuery("profile", () => {
+    getProfile(1);
+  });
+
+  const [profile, setProfile] = useState(
+    profileQuery.isSuccess ? profileQuery.data : null
+  );
 
   const onLogout = useCallback(() => {
     setProfile(null);
     setProvider("");
+    setLogout();
   }, []);
-
-  const getLoginProfile = () => {
-    axios
-      .get("http://localhost:8000/profile", {
-        params: {
-          id: 1,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        setProfile(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const updateLoginProfile = () => {
-    axios
-      .post("http://localhost:8000/profile", {
-        params: {
-          id: 1,
-        },
-        body: profile,
-      })
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  const getIGUser = (accessToken) => {
-    let pageId;
-    let IGUser;
-
-    axios
-      .get("https://graph.facebook.com/v17.0/me/accounts", {
-        params: {
-          access_token: accessToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        pageId = response.data.id;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-
-    axios
-      .get("https://graph.facebook.com/v17.0/" + pageId, {
-        params: {
-          fields: "instagram_business_account",
-          access_token: accessToken,
-        },
-      })
-      .then((response) => {
-        console.log(response.data);
-        IGUser = response.instagram_business_account.id;
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  };
-
-  getLoginProfile();
 
   return (
     <Card sx={{ height: "700px" }}>
@@ -121,22 +59,23 @@ const UserSettings = () => {
             }
             onLogoutSuccess={onLogout}
             onResolve={({ provider, data }) => {
-              setProvider(provider);
-              setProfile({
+              const newProfile = {
                 first_name: data.first_name,
                 last_name: data.last_name,
                 email: data.email,
                 picture: data.picture,
-              });
-              updateLoginProfile();
-              console.log(profile);
-              getIGUser(profile.accessToken);
+                accessToken: data.accessToken,
+              };
+              setProfile(newProfile);
+              updateProfile(newProfile);
+              setLogin();
             }}
             onReject={(err) => {
               console.log(err);
             }}
             redirect_uri={REDIRECT_URI}
-            scope="public_profile instagram_basic pages_show_list"
+            // scope="public_profile instagram_basic pages_show_list"
+            scope="public_profile "
           >
             <FacebookLoginButton />
           </LoginSocialFacebook>

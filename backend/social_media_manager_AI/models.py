@@ -13,7 +13,8 @@ class Profile(models.Model):
     last_name = models.CharField(max_length=100)
     email = models.EmailField()
     picture = models.CharField(max_length=600)
-    posts = models.ManyToManyField(to=Post)
+    access_token = models.CharField(max_length=100, default="")
+    posts = models.ForeignKey(Post, on_delete=models.CASCADE, default=None)
 
     def _str_(self):
         return self.first_name

@@ -13,10 +13,12 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-images-uploading": "^3.1.7",
+    "react-query": "^3.39.3",
     "react-scripts": "5.0.1",
     "react-social-login-buttons": "^3.9.1",
     "reactjs-social-login": "^2.6.2",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "zustand": "^4.3.8"
   },
   "scripts": {
     "start": "HTTPS=true SSL_CRT_FILE=localhost.pem SSL_KEY_FILE=localhost-key.pem react-scripts start",
