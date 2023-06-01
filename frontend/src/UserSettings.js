@@ -15,7 +15,7 @@ import { useQuery } from "react-query";
 import { LoginSocialFacebook } from "reactjs-social-login";
 import { FacebookLoginButton } from "react-social-login-buttons";
 import { getProfile, updateProfile } from "./helpers";
-import { useLoginStore } from "./store";
+import { useLoginStore, useScheduleStore } from "./store";
 import axios from "axios";
 
 const UserSettings = () => {
@@ -23,7 +23,8 @@ const UserSettings = () => {
   const [provider, setProvider] = useState("");
 
   const setLogin = useLoginStore((state) => state.setLogin);
-  const setLogout = useLoginStore((state) => state.setLogin);
+  const setLogout = useLoginStore((state) => state.setLogout);
+  const postFrequency = useScheduleStore((state) => state.postFrequency);
 
   const profileQuery = useQuery({
     queryKey: ["profile"],
@@ -52,7 +53,43 @@ const UserSettings = () => {
             <Button>Log out</Button>
             <Divider />
             <h1>Set Posting Schedule</h1>
-            <BasicSelect />
+            <BasicSelect
+              options={[
+                "Post once a month",
+                "Post once a week",
+                "Post once a day",
+              ]}
+              title="Posting schedule"
+            />
+            {postFrequency === "" ? null : postFrequency ===
+              "Post once a month" ? (
+              <BasicSelect
+                options={Array.from({ length: 29 }, (_, index) => index)}
+                title="Day"
+              />
+            ) : postFrequency === "Post once a week" ? (
+              <BasicSelect
+                options={[
+                  "Monday",
+                  "Tuesday",
+                  "Wednesday",
+                  "Thursday",
+                  "Friday",
+                  "Saturday",
+                  "Sunday",
+                ]}
+                title="Day"
+              />
+            ) : (
+              <BasicSelect
+                options={["Morning", "Afternoon", "Evening", "Night"]}
+                time="Time"
+              />
+            )}
+            <Button sx={{ marginTop: 4 }} variant="contained">
+              {" "}
+              Save schedule
+            </Button>
           </div>
         ) : (
           <LoginSocialFacebook
@@ -89,27 +126,27 @@ const UserSettings = () => {
 
 export default UserSettings;
 
-const BasicSelect = () => {
-  const [schedule, setSchedule] = useState("");
+const BasicSelect = ({ options, title }) => {
+  const setFrequency = useScheduleStore((state) => state.setPostFrequency);
+  const postFrequency = useScheduleStore((state) => state.postFrequency);
 
   const handleChange = (event) => {
-    setSchedule(event.target.value);
+    setFrequency(event.target.value);
   };
 
   return (
-    <Box sx={{ minWidth: 120, maxWidth: 400, margin: "auto" }}>
+    <Box sx={{ minWidth: 120, maxWidth: 400, margin: "auto", marginTop: 4 }}>
       <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">Schedule</InputLabel>
+        <InputLabel id="demo-simple-select-label">{title}</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={schedule}
-          label="Schedule"
+          label={title}
           onChange={handleChange}
         >
-          <MenuItem value={10}>Post once a month</MenuItem>
-          <MenuItem value={20}>Post once a week</MenuItem>
-          <MenuItem value={30}>Post once a day</MenuItem>
+          {options.map((option) => {
+            return <MenuItem value={option}>{option}</MenuItem>;
+          })}
         </Select>
       </FormControl>
     </Box>
